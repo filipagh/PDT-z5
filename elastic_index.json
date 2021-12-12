@@ -34,7 +34,7 @@
           "filter": [
             "lowercase",
             "asciifolding",
-            "shingle"
+            "filter_shingles"
           ],
           "char_filter": [
             "html_strip"
@@ -59,7 +59,7 @@
           "min_gram": 1,
           "max_gram": 10
         },
-        "custom_shingles": {
+        "filter_shingles": {
           "type": "shingle",
           "token_separator": ""
         }
@@ -77,10 +77,12 @@
       "location": { "type": "point" },
       "retweet_count": { "type": "integer" },
       "favorite_count": { "type": "integer" },
-      "happened_at": { "type": "date" },
+      "happened_at": {
+        "type": "date"
+      },
       "author_id": { "type": "long" },
       "country_id": { "type": "integer" },
-      "parent_id": { "type": "text" },
+      "parent_id": { "type": "text"},
       "pos": { "type": "double" },
       "neu": { "type": "double" },
       "neg": { "type": "double" },

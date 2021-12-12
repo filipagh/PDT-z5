@@ -1,4 +1,3 @@
-import datetime
 import json
 import time
 
@@ -7,19 +6,6 @@ from elasticsearch import Elasticsearch, helpers
 import utils_postgres
 
 es = Elasticsearch()
-
-res = es.cluster.health()
-
-
-# doc = {
-#     'author': 'kimchy',
-#     'text': 'Elasticsearch: cool. bonsai cool.',
-# }
-# res = es.index(index="test-index", id=1, document=doc)
-# print(res['result'])
-#
-# res = es.get(index="test-index", id=1)8
-# print(res['_source'])
 
 
 def reindex():
@@ -32,7 +18,7 @@ def reindex():
     actions = []
     for doc in docs:
         action = {
-            "_index": "tweets",
+            "_index": "tweetsdate",
             "_id": doc['id'],
             "_source": doc
         }
@@ -46,10 +32,11 @@ def create_doc(row):
     doc = {
         'id': row['id'],
         'content': row['content'],
-        'location': None if row['location'].strip() == '' else list(map(lambda x: float(x), row['location'].split(' '))),
+        'location': None if row['location'].strip() == '' else list(
+            map(lambda x: float(x), row['location'].split(' '))),
         'retweet_count': row['retweet_count'],
         'favorite_count': row['favorite_count'],
-        'happened_at': int(datetime.datetime.timestamp(row['happened_at'])),
+        'happened_at': row['happened_at'],
         'author_id': row['author_id'],
         'country_id': row['country_id'],
         'parent_id': row['parent_id'],
@@ -68,22 +55,19 @@ def create_doc(row):
                 'statuses_count': row['statuses_count'],
             },
 
-        'hashtags': row['hashtags'],
+        'hashtags': None if row['hashtags'] == None else (row['hashtags'].split(' ')),
     }
     return doc
 
 
-
-
-
-
 def load_json():
-            with open('elastic_index.json','r') as open_file:
-                yield json.load(open_file)
+    with open('elastic_index.json', 'r') as open_file:
+        yield json.load(open_file)
+
 
 start = time.time()
 print(start)
-# helpers.bulk(es, load_json(), index='tweets')
+helpers.bulk(es, load_json(), index='tweetsdate')
 reindex()
 
 end = time.time()
