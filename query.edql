@@ -1,0 +1,104 @@
+HOST http://localhost:9201
+#authorization if need
+#Authorization "Bear xxx"
+#Username "elastic"
+#Password "password"
+
+Timeout 99999
+
+POST tweets/_search
+{
+#  "timed_out": false,
+  "size": 10000,
+}
+POST tweets-with-sentiment/_search
+{
+}
+
+POST tweets/_search
+{
+}
+
+
+
+
+POST tweets-with-sentiment/_search
+{
+  "explain": true,
+  "query": {
+    "multi_match" : {
+      "fuzziness": "AUTO",
+      "fuzzy_transpositions": true,
+      "type": "most_fields",
+      "query": "gates s0ros vaccine micr0chip",
+      "fields": [
+        "author.name^6",
+        "content^8",
+        "author.description^6",
+        "author.screen_name^10"
+      ]
+    }
+  },
+  "size": 10,
+  "from": 0,
+  "sort": []
+}
+
+
+
+POST tweets-with-sentiment/_search
+{
+  "explain": true,
+  "query": {
+    "multi_match" : {
+      "fuzziness": "AUTO",
+      "fuzzy_transpositions": true,
+      "type": "most_fields",
+      "query": "gates s0ros vaccine micr0chip",
+      "fields": [
+        "author.name^6",
+        "content^8",
+        "author.description^6",
+        "author.screen_name^10"
+      ]
+    }
+  },
+  "post_filter": {
+    "bool": {
+      "must" :
+      [
+        {
+          "range": {
+            "author.statuses_count": {
+              "gt": 1000
+            }
+          }
+        },
+        {
+          "term": {
+            "hashtags": "qanon"
+          }
+        }
+      ]
+    }
+  },
+    "size": 10,
+    "from": 0,
+    "sort": []
+  }
+
+
+  POST tweets-with-sentiment/_search
+  {
+  "explain": true,
+  "query": {
+    "match": {
+      "author.screen_name.ngram": {
+        "query": "writepoet",
+      },
+    },
+  },
+  "size": 10,
+  "from": 0,
+  "sort": []
+}
